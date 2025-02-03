@@ -78,10 +78,9 @@ pipeline {
         }
     }
 
-    post {
+   post {
         success {
             echo "✅ Build and deployment successful!"
-            build job: 'downstream-job', wait: false
         }
         failure {
             echo "❌ Build failed, please check logs!"
