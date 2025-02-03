@@ -13,19 +13,15 @@ pipeline {
             }
         }
 
-        stage('Build') {
+         stage('Build') {
             steps {
                 script {
-                    // Create and activate a virtual environment
-                    sh 'python3 -m venv venv'
-                    sh 'source venv/bin/activate'  // For Linux-based systems
-                    
-                    // Ensure pip is up to date
-                    sh 'python3 -m pip install --upgrade pip'
-
-                    // Install dependencies inside the virtual environment
-                    sh 'python3 -m pip install -r requirements.txt'
-                    sh 'python3 setup.py install'
+                    sh '''
+                        python3 -m venv venv
+                        source venv/bin/activate
+                        pip install --upgrade --user pip  # Fixing the permission issue
+                        pip install -r requirements.txt
+                    '''
                 }
             }
         }
