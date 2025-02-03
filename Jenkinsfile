@@ -8,7 +8,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 git url: "https://github.com/Ashwini2593/MultibranchPipelineUsingPython.git", branch: 'main'
-                echo "Code clone ho gaya hai..........."
+                echo "Code clone ho gaya hai............."
                 checkout scm
             }
         }
