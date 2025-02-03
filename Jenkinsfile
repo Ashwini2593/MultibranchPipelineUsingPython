@@ -8,7 +8,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Clone the repository from GitHub
-                 git url: "https://github.com/Ashwini2593/node-todo-cicd.git", branch: 'main'
+                 git url: "https://github.com/Ashwini2593/MultibranchPipelineUsingPython.git", branch: 'main'
                 echo "Code clone ho gaya hai"
                 checkout scm
             }
