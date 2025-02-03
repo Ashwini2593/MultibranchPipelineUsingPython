@@ -76,6 +76,18 @@ pipeline {
                 }
             }
         }
+
+        stage('Run Docker Container & Capture Output') {
+            steps {
+                script {
+                    echo "✅ Running Docker container and capturing output..."
+                    sh '''
+                    docker run --rm ${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG} python3 app.py
+                    '''
+                    echo "✅ Application output displayed above."
+                }
+            }
+        }
     }
 
     post {
