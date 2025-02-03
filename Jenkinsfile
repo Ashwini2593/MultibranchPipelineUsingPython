@@ -8,7 +8,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 git url: "https://github.com/Ashwini2593/MultibranchPipelineUsingPython.git", branch: 'main'
-                echo "Code clone ho gaya hai"
+                echo "Code clone ho gaya hai..........."
                 checkout scm
             }
         }
@@ -38,7 +38,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh "docker build -t ${IMAGE_NAME}:${DOCKER_IMAGE_TAG} ."
-                echo "Docker build bhi ho chuka hai"
+                echo "Docker build bhi ho chuka hai..........."
             }
         }
 
