@@ -8,7 +8,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Clone the repository from GitHub
-                 git url: "https://github.com/Ashwini2593/MultibranchPipelineUsingPython.git", branch: 'main'
+                git url: "https://github.com/Ashwini2593/MultibranchPipelineUsingPython.git", branch: 'main'
                 echo "Code clone ho gaya hai"
                 checkout scm
             }
@@ -17,9 +17,10 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    // Install dependencies and build the Python project
-                    sh 'pip install -r requirements.txt'
-                    sh 'python setup.py install'  // If you have setup.py for your project
+                    // Ensure pip uses Python 3
+                    sh 'python3 -m pip install --upgrade pip'  // Ensure pip is updated
+                    sh 'python3 -m pip install -r requirements.txt'  // Use python3 for pip install
+                    sh 'python3 setup.py install'  // If you have setup.py for your project
                 }
             }
         }
@@ -35,7 +36,7 @@ pipeline {
             steps {
                 // Build Docker image with the tag
                 sh "docker build -t ${IMAGE_NAME}:${DOCKER_IMAGE_TAG} ."
-                echo "docker build bhi ho chuka hai"
+                echo "Docker build bhi ho chuka hai"
             }
         }
 
