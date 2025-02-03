@@ -2,22 +2,33 @@ pipeline {
     agent any
 
     environment {
-        BRANCH_NAME = env.BRANCH_NAME ?: 'default'  // Fixing null branch name issue
-        DOCKER_IMAGE_TAG = "${BRANCH_NAME}-${env.BUILD_NUMBER}"
+        DOCKER_IMAGE_TAG = "unknown-0"  // Temporary default value
         IMAGE_NAME = "ashudurge/python-jenkins-ci-ashu"
     }
 
     stages {
-        stage('Checkout the code ') {
+        stage('Initialize') {
             steps {
                 script {
-                    git branch: 'main', url: 'https://github.com/Ashwini2593/MultibranchPipelineUsingPython.git'
-                    echo "✅ Code checkout completed........."
+                    // Ensure BRANCH_NAME is not empty
+                    env.BRANCH_NAME = env.BRANCH_NAME ?: 'default'
+                    env.DOCKER_IMAGE_TAG = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+                    echo "✅ BRANCH_NAME set to: ${env.BRANCH_NAME}"
+                    echo "✅ Docker image tag: ${env.DOCKER_IMAGE_TAG}"
                 }
             }
         }
 
-        stage('Setup Python Environment is ready') {
+        stage('Checkout') {
+            steps {
+                script {
+                    git branch: 'main', url: 'https://github.com/Ashwini2593/MultibranchPipelineUsingPython.git'
+                    echo "✅ Code checkout completed."
+                }
+            }
+        }
+
+        stage('Setup Python Environment') {
             steps {
                 script {
                     sh '''
@@ -26,33 +37,33 @@ pipeline {
                         pip install --upgrade pip  
                         pip install -r requirements.txt
                     '''
-                    echo "✅ Python environment setup complete.........."
+                    echo "✅ Python environment setup complete."
                 }
             }
         }
 
-        stage('Run Tests is completed') {
+        stage('Run Tests') {
             steps {
                 script {
                     sh '''
                         source venv/bin/activate
                         PYTHONPATH=$(pwd) pytest --junitxml=results.xml
                     '''
-                    echo "✅ Tests executed successfully........."
+                    echo "✅ Tests executed successfully."
                 }
             }
         }
 
-        stage('Build Docker Image is completed') {
+        stage('Build Docker Image') {
             steps {
                 script {
                     sh "docker build -t ${IMAGE_NAME}:${DOCKER_IMAGE_TAG} ."
-                    echo "✅ Docker image built successfully.........."
+                    echo "✅ Docker image built successfully."
                 }
             }
         }
 
-        stage('Push Docker Image to mydockerhub') {
+        stage('Push Docker Image') {
             steps {
                 withCredentials([usernamePassword(credentialsId: "dockerHub", passwordVariable: "dockerHubPass", usernameVariable: "dockerHubUser")]) {
                     script {
@@ -61,7 +72,7 @@ pipeline {
                             docker tag ${IMAGE_NAME}:${DOCKER_IMAGE_TAG} ${dockerHubUser}/${IMAGE_NAME}:${DOCKER_IMAGE_TAG}
                             docker push ${dockerHubUser}/${IMAGE_NAME}:${DOCKER_IMAGE_TAG}
                         '''
-                        echo "✅ Docker image pushed to DockerHub successfully......"
+                        echo "✅ Docker image pushed to DockerHub."
                     }
                 }
             }
@@ -70,7 +81,7 @@ pipeline {
 
     post {
         success {
-            echo "✅ Build and deployment successfully!"
+            echo "✅ Build and deployment successful!"
             build job: 'downstream-job', wait: false
         }
         failure {
