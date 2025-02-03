@@ -63,19 +63,6 @@ pipeline {
             }
         }
 
-        // stage('Push Docker Image') {
-        //     steps {
-        //         withCredentials([usernamePassword(credentialsId: "dockerHub", passwordVariable: "dockerHubPass", usernameVariable: "dockerHubUser")]) {
-        //             script {
-        //                 sh '''
-        //                     docker login -u ${dockerHubUser} -p ${dockerHubPass}
-        //                     docker tag ${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG} ${dockerHubUser}/${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG}
-        //                     docker push ${dockerHubUser}/${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG}
-        //                 '''
-        //                 echo "✅ Docker image pushed to DockerHub."
-        //             }
-        //         }
-        //     }
         stage('Push Docker Image to Docker Hub') {
             steps {
                 script {
@@ -84,12 +71,12 @@ pipeline {
                         sh 'echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USERNAME} --password-stdin'
                     }
                     // Push the image
-                    sh 'docker push ${DOCKER_IMAGE}'
+                    sh 'docker push ${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG}'
+                    echo "✅ Docker image pushed to DockerHub."
                 }
             }
         }
     }
-}
 
     post {
         success {
