@@ -8,8 +8,9 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Clone the repository from GitHub
-                checkout scm
+                 git url: "https://github.com/Ashwini2593/node-todo-cicd.git", branch: 'master'
                 echo "Code clone ho gaya hai"
+                checkout scm
             }
         }
 
