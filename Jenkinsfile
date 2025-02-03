@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE_TAG = "unknown-0"  // Temporary default value
-        IMAGE_NAME = "ashudurge/python-jenkins-ci-ashu"
+        DOCKER_IMAGE = "ashudurge/python-jenkins-ci-ashu"
     }
 
     stages {
@@ -69,8 +69,8 @@ pipeline {
                     script {
                         sh '''
                             docker login -u ${dockerHubUser} -p ${dockerHubPass}
-                            docker tag ${IMAGE_NAME}:${DOCKER_IMAGE_TAG} ${dockerHubUser}/${IMAGE_NAME}:${DOCKER_IMAGE_TAG}
-                            docker push ${dockerHubUser}/${IMAGE_NAME}:${DOCKER_IMAGE_TAG}
+                            docker tag ${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG} ${dockerHubUser}/${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG}
+                            docker push ${dockerHubUser}/${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG}
                         '''
                         echo "✅ Docker image pushed to DockerHub."
                     }
