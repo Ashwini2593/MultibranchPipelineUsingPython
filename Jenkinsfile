@@ -1,16 +1,12 @@
 pipeline {
     agent any
+
     environment {
-        DOCKER_IMAGE = 'ashudurge/python-jenkins-ci-ashu:unknown-0'
+        DOCKER_IMAGE_TAG = "unknown-0"  // Temporary default value
+        DOCKER_IMAGE = "ashudurge/python-jenkins-ci-ashu"
     }
+
     stages {
-        stage('Declarative: Checkout SCM') {
-            steps {
-                git branch: 'main', url: 'https://github.com/Ashwini2593/MultibranchPipelineUsingPython.git'
-                checkout scm
-            }
-        }
-        
         stage('Initialize') {
             steps {
                 script {
@@ -23,14 +19,23 @@ pipeline {
             }
         }
 
+        stage('Checkout') {
+            steps {
+                script {
+                    git branch: 'main', url: 'https://github.com/Ashwini2593/MultibranchPipelineUsingPython.git'
+                    echo "✅ Code checkout completed."
+                }
+            }
+        }
+
         stage('Setup Python Environment') {
             steps {
                 script {
                     sh '''
-                    python3 -m venv venv
-                    source venv/bin/activate
-                    pip install --upgrade pip
-                    pip install -r requirements.txt
+                        python3 -m venv venv
+                        source venv/bin/activate
+                        pip install --upgrade pip  
+                        pip install -r requirements.txt
                     '''
                     echo "✅ Python environment setup complete."
                 }
@@ -41,8 +46,8 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    source venv/bin/activate
-                    pytest --junitxml=results.xml
+                        source venv/bin/activate
+                        PYTHONPATH=$(pwd) pytest --junitxml=results.xml
                     '''
                     echo "✅ Tests executed successfully."
                 }
@@ -52,9 +57,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh '''
-                    docker build -t ${DOCKER_IMAGE} .
-                    '''
+                    sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG} ."
                     echo "✅ Docker image built successfully."
                 }
             }
@@ -63,7 +66,7 @@ pipeline {
         stage('Push Docker Image to Docker Hub') {
             steps {
                 script {
-                     // Log in to Docker Hub
+                    // Log in to Docker Hub
                     withCredentials([usernamePassword(credentialsId: 'dockerHub', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
                         sh 'echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USERNAME} --password-stdin'
                     }
@@ -73,24 +76,14 @@ pipeline {
                 }
             }
         }
+    }
 
-        stage('Run Docker Container & Capture Output') {
-            steps {
-                script {
-                    echo "✅ Running Docker container and capturing output..."
-                    sh '''
-                    docker run --rm ${DOCKER_IMAGE} python3 app.py
-                    '''
-                    echo "✅ Application output displayed above."
-                }
-            }
+    post {
+        success {
+            echo "✅ Build and deployment successful!"
         }
-
-        stage('Declarative: Post Actions') {
-            steps {
-                echo "✅ Build and deployment successful!"
-            }
+        failure {
+            echo "❌ Build failed, please check logs!"
         }
     }
 }
-
