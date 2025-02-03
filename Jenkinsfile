@@ -8,7 +8,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Clone the repository from GitHub
-                 git url: "https://github.com/Ashwini2593/node-todo-cicd.git", branch: 'master'
+                 git url: "https://github.com/Ashwini2593/node-todo-cicd.git", branch: 'main'
                 echo "Code clone ho gaya hai"
                 checkout scm
             }
@@ -56,6 +56,9 @@ pipeline {
 
     post {
         success {
+            // Trigger downstream job after successful build
+            build job: 'downstream-job', wait: false
+            
             // Send success email notification
             mail to: 'adurge66@gmail.com',
                  subject: "Build Success: ${env.JOB_NAME} ${env.BUILD_NUMBER}",
