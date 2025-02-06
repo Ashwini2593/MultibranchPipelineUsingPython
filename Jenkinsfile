@@ -13,7 +13,7 @@ pipeline {
                 script {
                     // Ensure BRANCH_NAME is not empty
                     env.BRANCH_NAME = env.BRANCH_NAME ?: 'default'
-                    env.DOCKER_IMAGE_TAG = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+                    //env.DOCKER_IMAGE_TAG = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
                     echo "✅ BRANCH_NAME set to: ${env.BRANCH_NAME}"
                     echo "✅ Docker image tag: ${env.DOCKER_IMAGE_TAG}"
                 }
@@ -74,7 +74,7 @@ pipeline {
                         sh 'echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USERNAME} --password-stdin'
                     }
                     // Push the image
-                    sh 'docker push ${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG}'
+                    sh 'docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${imageTag}'
                     echo "✅ Docker image pushed to DockerHub..............."
                 }
             }
