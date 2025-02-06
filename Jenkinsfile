@@ -70,7 +70,7 @@ pipeline {
                         sh "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
                     }
                     sh "docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG}"
-                    echo "✅ Docker image pushed to Docker Hub."
+                    echo "✅ Docker image pushed to Docker Hub...."
                 }
             }
         }
@@ -80,7 +80,7 @@ pipeline {
                 script {
                     echo "✅ Running Docker container and capturing output..."
                     sh "docker run --rm ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG} python3 app.py"
-                    echo "✅ Application output displayed above."
+                    echo "✅ Application output displayed above...."
                 }
             }
         }
