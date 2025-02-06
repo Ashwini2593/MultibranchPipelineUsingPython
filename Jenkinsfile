@@ -87,6 +87,10 @@ pipeline {
     }
 
     post {
+        always {
+            echo "✅ Build completed, sending notifications..."
+        }
+
         success {
             echo "✅ Build and deployment successful!"
             script {
@@ -100,6 +104,7 @@ pipeline {
                     to: "${RECIPIENT_EMAIL}",
                     mimeType: 'text/html'
                 )
+                echo "✅ Email sent successfully."
             }
         }
 
@@ -116,7 +121,25 @@ pipeline {
                     to: "${RECIPIENT_EMAIL}",
                     mimeType: 'text/html'
                 )
+                echo "❌ Failure notification email sent."
+            }
+        }
+
+        unstable {
+            echo "⚠️ Build unstable, please check logs."
+            script {
+                emailext(
+                    subject: "⚠️ UNSTABLE: Jenkins Job '${env.JOB_NAME}' [${env.BUILD_NUMBER}]",
+                    body: """<h2>Build Unstable</h2>
+                             <p>Job: ${env.JOB_NAME}</p>
+                             <p>Build Number: ${env.BUILD_NUMBER}</p>
+                             <p>Status: UNSTABLE ⚠️</p>
+                             <p><a href="${env.BUILD_URL}">Click here to view build details</a></p>""",
+                    to: "${RECIPIENT_EMAIL}",
+                    mimeType: 'text/html'
+                )
+                echo "⚠️ Unstable notification email sent."
             }
         }
     }
-} 
+}
