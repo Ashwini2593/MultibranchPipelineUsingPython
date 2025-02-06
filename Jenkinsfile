@@ -4,6 +4,7 @@ pipeline {
     environment {
         DOCKER_REGISTRY = "docker.io"
         DOCKER_IMAGE = "ashudurge/python-jenkins-ci-ashu"
+        RECIPIENT_EMAIL = "adurge66@gmail.com"
     }
 
     stages {
@@ -12,8 +13,8 @@ pipeline {
                 script {
                     env.BRANCH_NAME = env.BRANCH_NAME ?: 'default'
                     env.DOCKER_IMAGE_TAG = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
-                    echo "✅  BRANCH_NAME set to: ${env.BRANCH_NAME}"
-                    echo "✅  Docker image tag: ${env.DOCKER_IMAGE_TAG}"
+                    echo "✅ BRANCH_NAME set to: ${env.BRANCH_NAME}"
+                    echo "✅ Docker image tag: ${env.DOCKER_IMAGE_TAG}"
                 }
             }
         }
@@ -88,9 +89,36 @@ pipeline {
     post {
         success {
             echo "✅ Build and deployment successful!"
+            script {
+                emailext(
+                    subject: "✅ SUCCESS: Jenkins Job '${env.JOB_NAME}' [${env.BUILD_NUMBER}]",
+                    body: """<h2>Build Successful!</h2>
+                             <p>Job: ${env.JOB_NAME}</p>
+                             <p>Build Number: ${env.BUILD_NUMBER}</p>
+                             <p>Status: SUCCESS ✅</p>
+                             <p><a href="${env.BUILD_URL}">Click here to view build details</a></p>""",
+                    recipientProviders: [[$class: 'CulpritsRecipientProvider']],
+                    to: "${RECIPIENT_EMAIL}",
+                    mimeType: 'text/html'
+                )
+            }
         }
+
         failure {
             echo "❌ Build failed, please check logs."
+            script {
+                emailext(
+                    subject: "❌ FAILURE: Jenkins Job '${env.JOB_NAME}' [${env.BUILD_NUMBER}]",
+                    body: """<h2>Build Failed!</h2>
+                             <p>Job: ${env.JOB_NAME}</p>
+                             <p>Build Number: ${env.BUILD_NUMBER}</p>
+                             <p>Status: FAILURE ❌</p>
+                             <p><a href="${env.BUILD_URL}">Click here to view build details</a></p>""",
+                    recipientProviders: [[$class: 'CulpritsRecipientProvider']],
+                    to: "${RECIPIENT_EMAIL}",
+                    mimeType: 'text/html'
+                )
+            }
         }
     }
 }
