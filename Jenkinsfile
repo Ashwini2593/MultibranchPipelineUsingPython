@@ -87,36 +87,34 @@ pipeline {
     }
 
     post {
-        success {
-            echo "✅ Build and deployment successful!"
-            script {
-                emailext(
-                    subject: "✅ SUCCESS: Jenkins Job '${env.JOB_NAME}' [${env.BUILD_NUMBER}]",
-                    body: """<h2>Build Successful!</h2>
-                             <p>Job: ${env.JOB_NAME}</p>
-                             <p>Build Number: ${env.BUILD_NUMBER}</p>
-                             <p>Status: SUCCESS ✅</p>
-                             <p><a href="${env.BUILD_URL}">Click here to view build details</a></p>""",
-                    to: "${RECIPIENT_EMAIL}",
-                    mimeType: 'text/html'
-                )
-            }
+    success {
+        echo "✅ Build and deployment successful!"
+        script {
+            emailext(
+                subject: "✅ SUCCESS: Jenkins Job '${env.JOB_NAME}' [${env.BUILD_NUMBER}]",
+                body: """<h2>Build Successful!</h2>
+                         <p>Job: ${env.JOB_NAME}</p>
+                         <p>Build Number: ${env.BUILD_NUMBER}</p>
+                         <p>Status: SUCCESS ✅</p>
+                         <p><a href="${env.BUILD_URL}">Click here to view build details</a></p>""",
+                to: "${env.RECIPIENT_EMAIL}",
+                mimeType: 'text/html'
+            )
         }
-
-        failure {
-            echo "❌ Build failed, please check logs."
-            script {
-                emailext(
-                    subject: "❌ FAILURE: Jenkins Job '${env.JOB_NAME}' [${env.BUILD_NUMBER}]",
-                    body: """<h2>Build Failed!</h2>
-                             <p>Job: ${env.JOB_NAME}</p>
-                             <p>Build Number: ${env.BUILD_NUMBER}</p>
-                             <p>Status: FAILURE ❌</p>
-                             <p><a href="${env.BUILD_URL}">Click here to view build details</a></p>""",
-                    to: "${RECIPIENT_EMAIL}",
-                    mimeType: 'text/html'
-                )
-            }
+    }
+    failure {
+        echo "❌ Build failed, please check logs."
+        script {
+            emailext(
+                subject: "❌ FAILURE: Jenkins Job '${env.JOB_NAME}' [${env.BUILD_NUMBER}]",
+                body: """<h2>Build Failed!</h2>
+                         <p>Job: ${env.JOB_NAME}</p>
+                         <p>Build Number: ${env.BUILD_NUMBER}</p>
+                         <p>Status: FAILURE ❌</p>
+                         <p><a href="${env.BUILD_URL}">Click here to view build details</a></p>""",
+                to: "${env.RECIPIENT_EMAIL}",
+                mimeType: 'text/html'
+            )
         }
     }
 }
