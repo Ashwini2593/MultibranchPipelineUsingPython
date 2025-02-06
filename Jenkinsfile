@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_REGISTRY = "docker.io"
         DOCKER_IMAGE = "ashudurge/python-jenkins-ci-ashu"
-        RECIPIENT_EMAIL = "adurge66@gmail.com"
+        RECIPIENT_EMAIL = "adurge66@gmail.com"  // Your Gmail address
     }
 
     stages {
@@ -97,7 +97,6 @@ pipeline {
                              <p>Build Number: ${env.BUILD_NUMBER}</p>
                              <p>Status: SUCCESS ✅</p>
                              <p><a href="${env.BUILD_URL}">Click here to view build details</a></p>""",
-                    recipientProviders: [[$class: 'CulpritsRecipientProvider']],
                     to: "${RECIPIENT_EMAIL}",
                     mimeType: 'text/html'
                 )
@@ -114,7 +113,6 @@ pipeline {
                              <p>Build Number: ${env.BUILD_NUMBER}</p>
                              <p>Status: FAILURE ❌</p>
                              <p><a href="${env.BUILD_URL}">Click here to view build details</a></p>""",
-                    recipientProviders: [[$class: 'CulpritsRecipientProvider']],
                     to: "${RECIPIENT_EMAIL}",
                     mimeType: 'text/html'
                 )
