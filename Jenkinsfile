@@ -49,7 +49,7 @@ pipeline {
                         source venv/bin/activate
                         PYTHONPATH=$(pwd) pytest --junitxml=results.xml
                     '''
-                    echo "✅ Tests executed successfully....."
+                    echo "✅ Tests executed successfully........"
                 }
             }
         }
