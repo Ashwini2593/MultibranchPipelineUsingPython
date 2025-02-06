@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE_TAG = "unknown-0"  // Temporary default value
+       // DOCKER_IMAGE_TAG = "unknown-0"  // Temporary default value
+        DOCKER_REGISTRY = "docker.io"
         DOCKER_IMAGE = "ashudurge/python-jenkins-ci-ashu"
     }
 
@@ -57,12 +58,14 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG} ."
+                    def imageTag = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+                      sh "docker build -t ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${imageTag} ."
+                   // sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG} ."
                     echo "✅ Docker image built successfully..................."
                 }
             }
         }
-
+ 
         stage('Push Docker Image to Docker Hub') {
             steps {
                 script {
