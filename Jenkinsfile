@@ -23,7 +23,7 @@ pipeline {
             steps {
                 script {
                     git branch: 'main', url: 'https://github.com/Ashwini2593/MultibranchPipelineUsingPython.git'
-                    echo "✅ Code checkout completed."
+                    echo "✅ Code checkout completed..........."
                 }
             }
         }
@@ -37,7 +37,7 @@ pipeline {
                         pip install --upgrade pip  
                         pip install -r requirements.txt
                     '''
-                    echo "✅ Python environment setup complete."
+                    echo "✅ Python environment setup complete..............."
                 }
             }
         }
@@ -49,7 +49,7 @@ pipeline {
                         source venv/bin/activate
                         PYTHONPATH=$(pwd) pytest --junitxml=results.xml
                     '''
-                    echo "✅ Tests executed successfully."
+                    echo "✅ Tests executed successfully.............."
                 }
             }
         }
@@ -58,7 +58,7 @@ pipeline {
             steps {
                 script {
                     sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG} ."
-                    echo "✅ Docker image built successfully."
+                    echo "✅ Docker image built successfully.................."
                 }
             }
         }
@@ -72,7 +72,7 @@ pipeline {
                     }
                     // Push the image
                     sh 'docker push ${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG}'
-                    echo "✅ Docker image pushed to DockerHub."
+                    echo "✅ Docker image pushed to DockerHub............."
                 }
             }
         }
@@ -84,7 +84,7 @@ pipeline {
                     sh '''
                     docker run --rm ${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG} python3 app.py
                     '''
-                    echo "✅ Application output displayed above."
+                    echo "✅ Application output displayed above................."
                 }
             }
         }
