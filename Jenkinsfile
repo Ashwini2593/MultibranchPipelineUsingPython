@@ -12,8 +12,8 @@ pipeline {
                 script {
                     env.BRANCH_NAME = env.BRANCH_NAME ?: 'default'
                     env.DOCKER_IMAGE_TAG = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
-                    echo "✅ BRANCH_NAME set to: ${env.BRANCH_NAME}"
-                    echo "✅ Docker image tag: ${env.DOCKER_IMAGE_TAG}"
+                    echo "✅  BRANCH_NAME set to: ${env.BRANCH_NAME}"
+                    echo "✅  Docker image tag: ${env.DOCKER_IMAGE_TAG}"
                 }
             }
         }
