@@ -70,6 +70,7 @@ pipeline {
             steps {
                 script {
                     // Log in to Docker Hub
+                    def imageTag = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
                     withCredentials([usernamePassword(credentialsId: 'dockerHub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                         sh 'echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin'
                     }
@@ -83,9 +84,10 @@ pipeline {
         stage('Run Docker Container & Capture Output') {
             steps {
                 script {
+                    def imageTag = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
                     echo "✅ Running Docker container and capturing output..."
                     sh '''
-                    docker run --rm ${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG} python3 app.py
+                    docker run --rm ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${imageTag} python3 app.py
                     '''
                     echo "✅ Application output displayed above............"
                 }
