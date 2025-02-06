@@ -15,8 +15,6 @@ pipeline {
                     env.DOCKER_IMAGE_TAG = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
                     echo "✅ BRANCH_NAME set to: ${env.BRANCH_NAME}"
                     echo "✅ Docker image tag: ${env.DOCKER_IMAGE_TAG}"
-                    echo "✅ Current environment variables:"
-                    sh 'printenv'  // Debugging step to print all environment variables
                 }
             }
         }
@@ -24,10 +22,8 @@ pipeline {
         stage('Checkout') {
             steps {
                 script {
-                    echo "✅ Checking out the code from the repository..."
                     git branch: 'main', url: 'https://github.com/Ashwini2593/MultibranchPipelineUsingPython.git'
                     echo "✅ Code checkout completed."
-                    sh 'ls -al'  // Debugging step to list files in the workspace
                 }
             }
         }
@@ -35,7 +31,6 @@ pipeline {
         stage('Setup Python Environment') {
             steps {
                 script {
-                    echo "✅ Setting up Python environment..."
                     sh '''
                         python3 -m venv venv
                         source venv/bin/activate
@@ -43,7 +38,6 @@ pipeline {
                         pip install -r requirements.txt
                     '''
                     echo "✅ Python environment setup complete."
-                    sh 'pip freeze'  // Debugging step to verify installed Python packages
                 }
             }
         }
@@ -51,14 +45,11 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    echo "✅ Running tests..."
                     sh '''
                         source venv/bin/activate
                         PYTHONPATH=$(pwd) pytest --junitxml=results.xml
                     '''
                     echo "✅ Tests executed successfully....."
-                    echo "✅ Test results:"
-                    sh 'cat results.xml'  // Debugging step to output test results
                 }
             }
         }
@@ -66,10 +57,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    echo "✅ Building Docker image..."
                     sh "docker build -t ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG} ."
                     echo "✅ Docker image built successfully...."
-                    sh "docker images"  // Debugging step to list Docker images
                 }
             }
         }
@@ -77,11 +66,9 @@ pipeline {
         stage('Push Docker Image to Docker Hub') {
             steps {
                 script {
-                    echo "✅ Logging into Docker Hub..."
                     withCredentials([usernamePassword(credentialsId: 'dockerHub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                         sh "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
                     }
-                    echo "✅ Pushing Docker image to Docker Hub..."
                     sh "docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG}"
                     echo "✅ Docker image pushed to Docker Hub...."
                 }
@@ -132,4 +119,4 @@ pipeline {
             }
         }
     }
-}
+} 
