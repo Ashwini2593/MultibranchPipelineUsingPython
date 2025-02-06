@@ -49,7 +49,7 @@ pipeline {
                         source venv/bin/activate
                         PYTHONPATH=$(pwd) pytest --junitxml=results.xml
                     '''
-                    echo "✅ Tests executed successfully."
+                    echo "✅ Tests executed successfully....."
                 }
             }
         }
@@ -58,7 +58,7 @@ pipeline {
             steps {
                 script {
                     sh "docker build -t ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG} ."
-                    echo "✅ Docker image built successfully."
+                    echo "✅ Docker image built successfully...."
                 }
             }
         }
