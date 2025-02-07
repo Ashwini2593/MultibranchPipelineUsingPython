@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -23,7 +24,7 @@ pipeline {
             steps {
                 script {
                     git branch: 'main', url: 'https://github.com/Ashwini2593/MultibranchPipelineUsingPython.git'
-                    echo "✅ Code checkout completed...."
+                    echo "✅ Code checkout completed."
                 }
             }
         }
@@ -48,8 +49,9 @@ pipeline {
                     sh '''
                         source venv/bin/activate
                         PYTHONPATH=$(pwd) pytest --junitxml=results.xml
+                        deactivate
                     '''
-                    echo "✅ Tests executed successfully............"
+                    echo "✅ Tests executed successfully."
                 }
             }
         }
@@ -58,7 +60,7 @@ pipeline {
             steps {
                 script {
                     sh "docker build -t ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG} ."
-                    echo "✅ Docker image built successfully...."
+                    echo "✅ Docker image built successfully."
                 }
             }
         }
@@ -70,7 +72,7 @@ pipeline {
                         sh "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
                     }
                     sh "docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG}"
-                    echo "✅ Docker image pushed to Docker Hub......"
+                    echo "✅ Docker image pushed to Docker Hub."
                 }
             }
         }
@@ -80,66 +82,21 @@ pipeline {
                 script {
                     echo "✅ Running Docker container and capturing output..."
                     sh "docker run --rm ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG} python3 app.py"
-                    echo "✅ Application output displayed above...."
+                    echo "✅ Application output displayed above."
                 }
             }
         }
     }
 
     post {
-        always {
-            echo "✅ Build completed, sending notifications..."
-        }
-
         success {
-            echo "✅ Build and deployment successful!"
-            script {
-                emailext(
-                    subject: "✅ SUCCESS: Jenkins Job '${env.JOB_NAME}' [${env.BUILD_NUMBER}]",
-                    body: """<h2>Build Successful!</h2>
-                             <p>Job: ${env.JOB_NAME}</p>
-                             <p>Build Number: ${env.BUILD_NUMBER}</p>
-                             <p>Status: SUCCESS ✅</p>
-                             <p><a href="${env.BUILD_URL}">Click here to view build details</a></p>""",
-                    to: "${RECIPIENT_EMAIL}",
-                    mimeType: 'text/html'
-                )
-                echo "✅ Email sent successfully."
-            }
+            mail to: "${RECIPIENT_EMAIL}", subject: 'Jenkins Job Succeeded', body: 'The Jenkins job has successfully completed.'
+            echo "✅ Build succeeded. The Flask API is running."
         }
 
         failure {
-            echo "❌ Build failed, please check logs."
-            script {
-                emailext(
-                    subject: "❌ FAILURE: Jenkins Job '${env.JOB_NAME}' [${env.BUILD_NUMBER}]",
-                    body: """<h2>Build Failed!</h2>
-                             <p>Job: ${env.JOB_NAME}</p>
-                             <p>Build Number: ${env.BUILD_NUMBER}</p>
-                             <p>Status: FAILURE ❌</p>
-                             <p><a href="${env.BUILD_URL}">Click here to view build details</a></p>""",
-                    to: "${RECIPIENT_EMAIL}",
-                    mimeType: 'text/html'
-                )
-                echo "❌ Failure notification email sent."
-            }
-        }
-
-        unstable {
-            echo "⚠️ Build unstable, please check logs."
-            script {
-                emailext(
-                    subject: "⚠️ UNSTABLE: Jenkins Job '${env.JOB_NAME}' [${env.BUILD_NUMBER}]",
-                    body: """<h2>Build Unstable</h2>
-                             <p>Job: ${env.JOB_NAME}</p>
-                             <p>Build Number: ${env.BUILD_NUMBER}</p>
-                             <p>Status: UNSTABLE ⚠️</p>
-                             <p><a href="${env.BUILD_URL}">Click here to view build details</a></p>""",
-                    to: "${RECIPIENT_EMAIL}",
-                    mimeType: 'text/html'
-                )
-                echo "⚠️ Unstable notification email sent."
-            }
+            mail to: "${RECIPIENT_EMAIL}", subject: 'Jenkins Job Failed', body: 'The Jenkins job has failed. Please check the logs.'
+            echo "❌ Build failed. Please check Jenkins logs."
         }
     }
 }
