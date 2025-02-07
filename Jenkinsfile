@@ -37,7 +37,7 @@ pipeline {
                         pip install --upgrade pip  
                         pip install -r requirements.txt
                     '''
-                    echo "✅ Python environment setup complete...."
+                    echo "✅ Python environment setup complete."
                 }
             }
         }
