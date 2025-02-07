@@ -91,13 +91,13 @@ pipeline {
             script {
                 echo "Build succeeded. The Flask API is running."
             }
-            mail to: 'syed.begum@informationtechconsultants.co.uk', 
+            mail to: 'adurge66@gmail.com', 
                  subject: 'Jenkins Job Succeeded', 
                  body: 'The Jenkins job has successfully completed.'
         }
         
         failure {
-            mail to: 'syed.begum@informationtechconsultants.co.uk', 
+            mail to: 'adurge66@gmail.com', 
                  subject: 'Jenkins Job Failed', 
                  body: 'The Jenkins job has failed. Please check the logs.'
         }
