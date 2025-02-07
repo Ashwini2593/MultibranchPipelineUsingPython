@@ -23,7 +23,7 @@ pipeline {
             steps {
                 script {
                     git branch: 'main', url: 'https://github.com/Ashwini2593/MultibranchPipelineUsingPython.git'
-                    echo "✅ Code checkout completed...."
+                    echo "✅ Code checkout completed."
                 }
             }
         }
@@ -48,8 +48,9 @@ pipeline {
                     sh '''
                         source venv/bin/activate
                         PYTHONPATH=$(pwd) pytest --junitxml=results.xml
+                        deactivate
                     '''
-                    echo "✅ Tests executed successfully........"
+                    echo "✅ Tests executed successfully."
                 }
             }
         }
@@ -58,7 +59,7 @@ pipeline {
             steps {
                 script {
                     sh "docker build -t ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG} ."
-                    echo "✅ Docker image built successfully...."
+                    echo "✅ Docker image built successfully."
                 }
             }
         }
@@ -70,7 +71,7 @@ pipeline {
                         sh "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
                     }
                     sh "docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG}"
-                    echo "✅ Docker image pushed to Docker Hub......"
+                    echo "✅ Docker image pushed to Docker Hub."
                 }
             }
         }
@@ -80,21 +81,21 @@ pipeline {
                 script {
                     echo "✅ Running Docker container and capturing output..."
                     sh "docker run --rm ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG} python3 app.py"
-                    echo "✅ Application output displayed above...."
+                    echo "✅ Application output displayed above."
                 }
             }
         }
     }
 
-    //Step 8: Success/Failure Notification to Email
- post {
+    post {
         success {
-            mail to: 'syed.begum@informationtechconsultants.co.uk', subject: 'Jenkins Job Succeeded', body: 'The Jenkins job has successfully completed.'
-            // Output the full URL to access the Flask API
-            echo "Build succeeded. The Flask API is running at"
+            mail to: "${RECIPIENT_EMAIL}", subject: 'Jenkins Job Succeeded', body: 'The Jenkins job has successfully completed.'
+            echo "✅ Build succeeded. The Flask API is running."
         }
-      // Step 6: Jenkins Failed Job Alerts
+
         failure {
-            mail to: 'syed.begum@informationtechconsultants.co.uk', subject: 'Jenkins Job Failed', body: 'The Jenkins job has failed. Please check the logs.'
+            mail to: "${RECIPIENT_EMAIL}", subject: 'Jenkins Job Failed', body: 'The Jenkins job has failed. Please check the logs.'
+            echo "❌ Build failed. Please check Jenkins logs."
         }
     }
+}
