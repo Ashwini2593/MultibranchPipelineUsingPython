@@ -93,7 +93,7 @@ pipeline {
             }
             mail to: 'adurge66@gmail.com', 
                  subject: 'Jenkins Job Succeeded', 
-                 body: 'The Jenkins job has successfully completed.'
+                 body: 'The Jenkins job has successfully completed......'
         }
         
         failure {
