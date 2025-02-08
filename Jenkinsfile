@@ -89,7 +89,7 @@ pipeline {
     post {
         success {
             script {
-                echo "Build succeeded. The Flask API is running."
+                echo "Build succeeded. The Application is running successful."
             }
             mail to: 'adurge66@gmail.com', 
                  subject: 'Jenkins Job Succeeded', 
