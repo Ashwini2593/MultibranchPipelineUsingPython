@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
 
@@ -38,7 +37,7 @@ pipeline {
                         pip install --upgrade pip  
                         pip install -r requirements.txt
                     '''
-                    echo "✅ Python environment setup complete........."
+                    echo "✅ Python environment setup complete."
                 }
             }
         }
@@ -51,7 +50,7 @@ pipeline {
                         PYTHONPATH=$(pwd) pytest --junitxml=results.xml
                         deactivate
                     '''
-                    echo "✅ Tests executed successfully....."
+                    echo "✅ Tests executed successfully."
                 }
             }
         }
@@ -89,14 +88,29 @@ pipeline {
     }
 
     post {
-        success {
-            mail to: "${RECIPIENT_EMAIL}", subject: 'Jenkins Job Succeeded', body: 'The Jenkins job has successfully completed.'
-            echo "✅ Build succeeded. The application is running...."
-        }
+        always {
+            script {
+                echo "📨 Sending build notification email..."
+                try {
+                    mail bcc: '',
+                         cc: '',
+                         from: 'adurge66@gmail.com',
+                         replyTo: 'adurge66@gmail.com',
+                         to: "${RECIPIENT_EMAIL}",
+                         subject: "[Jenkins] Job '${env.JOB_NAME}' #${env.BUILD_NUMBER}",
+                         body: """Jenkins build results:
 
-        failure {
-            mail to: "${RECIPIENT_EMAIL}", subject: 'Jenkins Job Failed', body: 'The Jenkins job has failed. Please check the logs.'
-            echo "❌ Build failed. Please check Jenkins logs."
+🔹 **Job Name**: ${env.JOB_NAME}
+🔹 **Build Number**: ${env.BUILD_NUMBER}
+🔹 **Build Status**: ${currentBuild.currentResult}
+🔹 **Triggered By**: ${currentBuild.getBuildCauses().toString()}
+
+Check the logs for details: ${env.BUILD_URL}"""
+                    echo "✅ Email notification sent successfully."
+                } catch (Exception e) {
+                    echo "❌ Failed to send email: ${e.getMessage()}"
+                }
+            }
         }
     }
 }
