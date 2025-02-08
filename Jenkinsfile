@@ -1,16 +1,17 @@
+
 pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE_TAG = "unknown-0"  // Temporary default value
+        DOCKER_REGISTRY = "docker.io"
         DOCKER_IMAGE = "ashudurge/python-jenkins-ci-ashu"
+        RECIPIENT_EMAIL = "adurge66@gmail.com"  // Your Gmail address
     }
 
     stages {
         stage('Initialize') {
             steps {
                 script {
-                    // Ensure BRANCH_NAME is not empty
                     env.BRANCH_NAME = env.BRANCH_NAME ?: 'default'
                     env.DOCKER_IMAGE_TAG = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
                     echo "✅ BRANCH_NAME set to: ${env.BRANCH_NAME}"
@@ -23,7 +24,7 @@ pipeline {
             steps {
                 script {
                     git branch: 'main', url: 'https://github.com/Ashwini2593/MultibranchPipelineUsingPython.git'
-                    echo "✅ Code checkout completed............"
+                    echo "✅ Code checkout completed."
                 }
             }
         }
@@ -37,7 +38,7 @@ pipeline {
                         pip install --upgrade pip  
                         pip install -r requirements.txt
                     '''
-                    echo "✅ Python environment setup complete."
+                    echo "✅ Python environment setup complete........."
                 }
             }
         }
@@ -48,8 +49,9 @@ pipeline {
                     sh '''
                         source venv/bin/activate
                         PYTHONPATH=$(pwd) pytest --junitxml=results.xml
+                        deactivate
                     '''
-                    echo "✅ Tests executed successfully."
+                    echo "✅ Tests executed successfully....."
                 }
             }
         }
@@ -57,7 +59,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG} ."
+                    sh "docker build -t ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG} ."
                     echo "✅ Docker image built successfully."
                 }
             }
@@ -66,13 +68,11 @@ pipeline {
         stage('Push Docker Image to Docker Hub') {
             steps {
                 script {
-                    // Log in to Docker Hub
-                    withCredentials([usernamePassword(credentialsId: 'dockerHub', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
-                        sh 'echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USERNAME} --password-stdin'
+                    withCredentials([usernamePassword(credentialsId: 'dockerHub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        sh "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
                     }
-                    // Push the image
-                    sh 'docker push ${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG}'
-                    echo "✅ Docker image pushed to DockerHub."
+                    sh "docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG}"
+                    echo "✅ Docker image pushed to Docker Hub."
                 }
             }
         }
@@ -81,9 +81,7 @@ pipeline {
             steps {
                 script {
                     echo "✅ Running Docker container and capturing output..."
-                    sh '''
-                    docker run --rm ${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG} python3 app.py
-                    '''
+                    sh "docker run --rm ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG} python3 app.py"
                     echo "✅ Application output displayed above."
                 }
             }
@@ -92,10 +90,13 @@ pipeline {
 
     post {
         success {
-            echo "✅ Build and deployment successful!"
+            mail to: "${RECIPIENT_EMAIL}", subject: 'Jenkins Job Succeeded', body: 'The Jenkins job has successfully completed.'
+            echo "✅ Build succeeded. The application is running...."
         }
+
         failure {
-            echo "❌ Build failed, please check logs!"
+            mail to: "${RECIPIENT_EMAIL}", subject: 'Jenkins Job Failed', body: 'The Jenkins job has failed. Please check the logs.'
+            echo "❌ Build failed. Please check Jenkins logs."
         }
     }
 }
