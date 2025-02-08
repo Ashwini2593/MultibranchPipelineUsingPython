@@ -91,7 +91,7 @@ pipeline {
     post {
         success {
             mail to: "${RECIPIENT_EMAIL}", subject: 'Jenkins Job Succeeded', body: 'The Jenkins job has successfully completed.'
-            echo "✅ Build succeeded. The application is running...."
+            echo "✅ Build succeeded. The application is running......"
         }
 
         failure {
