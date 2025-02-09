@@ -90,7 +90,7 @@ pipeline {
     post {
         always {
             script {
-                echo "📨 Sending build notification email .............."
+                echo "📨 Sending build notification email ................."
                 try {
                     mail bcc: '',
                          cc: '',
