@@ -71,7 +71,7 @@ pipeline {
                         sh "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
                     }
                     sh "docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG}"
-                    echo "✅ Docker image pushed to Docker Hub."
+                    echo "✅ Docker image pushed to Docker Hub......"
                 }
             }
         }
