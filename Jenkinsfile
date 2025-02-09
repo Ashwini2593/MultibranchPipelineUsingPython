@@ -50,7 +50,7 @@ pipeline {
                         PYTHONPATH=$(pwd) pytest --junitxml=results.xml
                         deactivate
                     '''
-                    echo "✅ Tests executed successfully."
+                    echo "✅ Tests executed successfully......."
                 }
             }
         }
@@ -90,7 +90,7 @@ pipeline {
     post {
         always {
             script {
-                echo "📨 Sending build notification email..."
+                echo "📨 Sending build notification email ........."
                 try {
                     mail bcc: '',
                          cc: '',
